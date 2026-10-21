@@ -1,0 +1,25 @@
+# 開発用Dockerfile(本番用に rails new が生成する ./Dockerfile とは別物)
+# compose.yml の web / css サービスから使う。
+# Ruby のバージョンは .ruby-version と揃える。
+ARG RUBY_VERSION=3.4.4
+FROM docker.io/library/ruby:$RUBY_VERSION-slim
+
+WORKDIR /app
+
+# gem のビルドと PostgreSQL への接続(pg gem)に必要なパッケージ
+# ※ Active Storage を使わない(画像を保存しない)ため、画像処理用の libvips は入れない
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential git libpq-dev libyaml-dev pkg-config curl && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# 先に Gemfile だけコピーして bundle install(Gemfile が変わらない限りキャッシュが効く)
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# アプリ本体は compose.yml でマウントするが、初回ビルド用にコピーしておく
+COPY . .
+
+EXPOSE 3000
+
+CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]

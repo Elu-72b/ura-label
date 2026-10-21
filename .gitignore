@@ -29,3 +29,21 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# ============================================
+# 以下、ura-label で追加した設定
+# ============================================
+
+# .env の見本は共有する(Rails 初期設定の /.env* に対する例外)
+!/.env.example
+
+# Claude と進める開発の作業ファイル(ローカル専用)
+/docs/development_plan/
+/docs/development_log/
+/.claude/commands/
+/.claude/settings.local.json
+
+# OS・エディタが作るファイル
+.DS_Store
+.idea/
+.vscode/
