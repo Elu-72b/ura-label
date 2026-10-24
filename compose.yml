@@ -2,13 +2,14 @@
 # 使い方: docker compose up → http://localhost:3100
 services:
   db:
-    # 本番(Render)の PostgreSQL とメジャーバージョンを揃える
-    image: postgres:16
+    # 本番(Neon)の PostgreSQL とメジャーバージョンを揃える
+    image: postgres:18
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      # 18 からデータは /var/lib/postgresql/18/docker に置かれるため、親ディレクトリにマウントする
+      - pg_data:/var/lib/postgresql
     # DBの準備完了を web 側が待てるようにヘルスチェックを設定
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
