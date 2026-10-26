@@ -20,17 +20,16 @@ erDiagram
         bigint id PK
         string name UK "成分名(正規化して保存)NOT NULL"
         string inci_name "INCI名"
-        string reading "読み(カナ)五十音順用【案】"
-        string aliases "別名・表記ゆれ【案】配列か別テーブルか"
-        integer caution_level "注意度1〜5 NOT NULL デフォルトの有無は【案】"
-        string category "絞り込み用(保湿・防腐など)"
-        string purpose "主な配合目的(文章)"
+        string reading "読み(カタカナ)五十音順用 NOT NULL"
+        integer caution_level "注意度1〜5 NOT NULL デフォルトなし CHECK 1〜5"
+        string category "絞り込み用 CATEGORIESから1つ NOT NULL"
+        string purpose "主な配合目的(文章)NOT NULL"
         text description "説明"
         string source "出典名"
         string source_url "出典URL"
-        date source_accessed_on "参照日【案】"
+        date source_accessed_on "参照日"
         boolean ai_generated "AI生成か NOT NULL default false"
-        string verification_status "確認状態【案】ai_generatedとは別"
+        string verification_status "確認状態(フェーズ3)ai_generatedとは別"
         datetime ai_generated_at "AI生成日(フェーズ3)"
         datetime manually_edited_at "最終編集日・手動(フェーズ3)"
         datetime created_at
@@ -76,11 +75,11 @@ erDiagram
 
 ## テーブルを作るフェーズ
 
-| テーブル | フェーズ |
-| --- | --- |
-| `ingredients` | 1(`ai_generated_at` / `manually_edited_at` は 3 で追加) |
-| `users` / `sessions` | 7(`admin` は 9 で追加) |
-| `favorite_ingredients` / `search_histories` | 7 |
+| テーブル                                    | フェーズ                                                                        |
+| ------------------------------------------- | ------------------------------------------------------------------------------- |
+| `ingredients`                               | 1(`verification_status` / `ai_generated_at` / `manually_edited_at` は 3 で追加) |
+| `users` / `sessions`                        | 7(`admin` は 9 で追加)                                                          |
+| `favorite_ingredients` / `search_histories` | 7                                                                               |
 
 ## 設計の意図
 
@@ -92,10 +91,14 @@ erDiagram
 6. **ログインしていない利用者のデータは保存しない**: `search_histories.user_id` は NOT NULL
 7. **未登録・取得失敗の成分は保存しない**: 画面に表示するだけにし、注意度3で登録されないようにする
 
-## 未確定の点(フェーズ1で相談)
+## フェーズ1で決めたこと(issue #18)
 
-- **aliases の持ち方**: PostgreSQL の配列カラムか、`ingredient_aliases` テーブルか(別名もあいまい検索するなら、別テーブルのほうがインデックスを張りやすい)
-- **`caution_level` のデフォルト**: 未登録・取得失敗は保存しないので、デフォルトなし(登録時に必ず指定)が意図に合う
-- **`category` を1つにするか**: 複数の目的がある成分(保湿と増粘など)を配列で持つか
-- **`verification_status` の値**: 未確認・確認済みの2つか、ほかの状態も持つか
-- **`reading` / `source_accessed_on` を持たせるか**
+- **`reading` / `source_accessed_on`**: フェーズ1で追加する。`reading` はカタカナ・NOT NULL(成分辞典を五十音順に並べるため)、`source_accessed_on` は任意
+- **`caution_level`**: デフォルトなし。NOT NULL と DB のチェック制約(1〜5)を付ける。未登録・取得失敗は保存しないため、デフォルトは要らない
+- **`category`**: 固定リスト(`Ingredient::CATEGORIES`)から主なものを1つ・必須。複数の目的がある成分は、ほかの目的を `purpose` に書く
+- **`purpose`**: NOT NULL(結果画面で必ず表示するため)
+- **aliases**: 今は持たない。表記ゆれは名前の正規化とあいまい検索で吸収する。必要になったら `ingredient_aliases` テーブルを提案する(別名もあいまい検索するなら、別テーブルのほうがインデックスを張りやすい)
+
+## 未確定の点
+
+- **`verification_status` の値**: フェーズ3(AI 生成の追加時)に、`ai_generated_at` / `manually_edited_at` と一緒に追加する。未確認・確認済みの2つか、ほかの状態も持つかはそのときに決める
