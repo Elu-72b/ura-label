@@ -1,0 +1,22 @@
+# 成分のテストデータ。テストのたびに DB に読み込まれる(test/test_helper.rb の fixtures :all)
+# 注意度・配合目的は docs/CAUTION_CRITERIA.md と表現ルールに合わせる
+
+water:
+  name: 水
+  inci_name: Water
+  reading: ミズ
+  caution_level: 1
+  category: その他
+  purpose: ほかの成分を溶かす溶剤として配合されることがある
+  source: テスト用データ
+  ai_generated: false
+
+methylparaben:
+  name: メチルパラベン
+  inci_name: Methylparaben
+  reading: メチルパラベン
+  caution_level: 3
+  category: 防腐
+  purpose: 防腐剤として配合されることがある
+  source: テスト用データ
+  ai_generated: false
