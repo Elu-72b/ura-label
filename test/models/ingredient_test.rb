@@ -21,6 +21,29 @@ class IngredientTest < ActiveSupport::TestCase
     assert duplicate.errors.of_kind?(:name, :taken)
   end
 
+  test "normalize_name は全角英数・半角カナ・ひらがな・空白の表記ゆれをそろえる" do
+    assert_equal "メチルパラベン", Ingredient.normalize_name("めちるぱらべん")
+    assert_equal "メチルパラベン", Ingredient.normalize_name("ﾒﾁﾙﾊﾟﾗﾍﾞﾝ")
+    assert_equal "メチルパラベン", Ingredient.normalize_name(" メチル　パラベン ")
+    assert_equal "PEG-60", Ingredient.normalize_name("ＰＥＧ－６０")
+  end
+
+  test "name は代入したときに正規化される" do
+    @ingredient.name = "ぐりせりん"
+    assert_equal "グリセリン", @ingredient.name
+  end
+
+  test "ひらがなの名前で find_by しても、正規化した名前の成分が見つかる" do
+    assert_equal ingredients(:methylparaben), Ingredient.find_by(name: "めちるぱらべん")
+  end
+
+  test "表記が違っても正規化すると同じ名前なら、登録済みとして無効" do
+    duplicate = ingredients(:methylparaben).dup
+    duplicate.name = "めちる ぱらべん"
+    assert_not duplicate.valid?
+    assert duplicate.errors.of_kind?(:name, :taken)
+  end
+
   test "reading が空だと無効" do
     @ingredient.reading = ""
     assert_not @ingredient.valid?
@@ -28,7 +51,7 @@ class IngredientTest < ActiveSupport::TestCase
   end
 
   test "reading にカタカナ以外が含まれると無効" do
-    [ "みず", "水", "Water" ].each do |reading|
+    [ "水", "Water" ].each do |reading|
       @ingredient.reading = reading
       assert_not @ingredient.valid?, "reading=#{reading} が有効になっている"
       assert @ingredient.errors.of_kind?(:reading, :invalid)
@@ -40,6 +63,22 @@ class IngredientTest < ActiveSupport::TestCase
       @ingredient.reading = reading
       assert @ingredient.valid?, "reading=#{reading} が無効になっている"
     end
+  end
+
+  test "reading はひらがな・全角数字で入れても、カタカナ・半角数字にそろう" do
+    @ingredient.reading = "ぴーいーじー６０"
+    assert_equal "ピーイージー60", @ingredient.reading
+    assert @ingredient.valid?
+  end
+
+  test "inci_name は前後の空白を除き、連続する空白を1つにする" do
+    @ingredient.inci_name = "　Sodium　 Hyaluronate "
+    assert_equal "Sodium Hyaluronate", @ingredient.inci_name
+  end
+
+  test "inci_name が空白だけなら nil になる" do
+    @ingredient.inci_name = " 　"
+    assert_nil @ingredient.inci_name
   end
 
   test "caution_level が 1 と 5 なら有効" do
