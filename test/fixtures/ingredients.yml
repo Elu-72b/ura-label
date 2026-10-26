@@ -20,3 +20,13 @@ methylparaben:
   purpose: 防腐剤として配合されることがある
   source: テスト用データ
   ai_generated: false
+
+ethylparaben:
+  name: エチルパラベン
+  inci_name: Ethylparaben
+  reading: エチルパラベン
+  caution_level: 3
+  category: 防腐
+  purpose: 防腐剤として配合されることがある
+  source: テスト用データ
+  ai_generated: false

@@ -28,4 +28,21 @@ class Ingredient < ApplicationRecord
   def self.normalize_inci_name(str)
     str.to_s.unicode_normalize(:nfkc).squish
   end
+
+  # 表記ゆれに対応するあいまい検索。似ている成分を類似度(score: 0〜1)の高い順に返す
+  # 名前・読みは normalize_name、INCI名は normalize_inci_name でそろえた検索語と比べる
+  def self.fuzzy_search(query)
+    name_query = normalize_name(query)
+    return none if name_query.empty?
+
+    binds = { name_query: name_query, inci_query: normalize_inci_name(query) }
+    score = sanitize_sql_array([
+      "GREATEST(similarity(name, :name_query), similarity(reading, :name_query), similarity(inci_name, :inci_query)) AS score",
+      binds
+    ])
+
+    select("ingredients.*", score)
+      .where("name % :name_query OR reading % :name_query OR inci_name % :inci_query", binds)
+      .order("score DESC", :reading)
+  end
 end

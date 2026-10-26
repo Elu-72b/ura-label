@@ -133,4 +133,35 @@ class IngredientTest < ActiveSupport::TestCase
       @ingredient.dup.save(validate: false)
     end
   end
+
+  test "fuzzy_search は1文字違いの成分名でも見つける" do
+    result = Ingredient.fuzzy_search("メチルパラベソ").first
+    assert_equal ingredients(:methylparaben), result
+    assert_operator result.score, :<, 1.0
+  end
+
+  test "fuzzy_search は類似度の高い順に返し、似ていない成分は返さない" do
+    assert_equal [ "メチルパラベン", "エチルパラベン" ], Ingredient.fuzzy_search("メチルパラベン").map(&:name)
+  end
+
+  test "fuzzy_search は正規化すると同じ名前なら score が 1 になる" do
+    assert_in_delta 1.0, Ingredient.fuzzy_search("めちる ぱらべん").first.score
+  end
+
+  test "fuzzy_search はひらがなの読みでも見つける" do
+    assert_equal ingredients(:water), Ingredient.fuzzy_search("みず").first
+  end
+
+  test "fuzzy_search は INCI名でも、大文字・小文字の違いを気にせず見つける" do
+    assert_equal ingredients(:methylparaben), Ingredient.fuzzy_search("methylparaben").first
+  end
+
+  test "fuzzy_search は似ている成分がなければ空を返す" do
+    assert_empty Ingredient.fuzzy_search("ヒアルロン酸").to_a
+  end
+
+  test "fuzzy_search は空白だけや nil の検索語なら空を返す" do
+    assert_empty Ingredient.fuzzy_search(" 　").to_a
+    assert_empty Ingredient.fuzzy_search(nil).to_a
+  end
 end
