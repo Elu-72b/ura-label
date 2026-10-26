@@ -8,10 +8,41 @@ class Ingredient < ApplicationRecord
   # 読みに使える文字(カタカナ・長音・中点・半角数字)。五十音順に並べるため、ひらがな・漢字・英字は入れない
   READING_FORMAT = /\A[ァ-ヶー・0-9]+\z/
 
+  # 値を代入したときに加え、find_by(name: ...) / where(name: ...) の検索値にも自動で適用される
+  normalizes :name, :reading, with: ->(value) { normalize_name(value) }
+  normalizes :inci_name, with: ->(value) { normalize_inci_name(value).presence }
+
   validates :name, presence: true, uniqueness: true
   validates :reading, presence: true, format: { with: READING_FORMAT, allow_blank: true }
   validates :caution_level, inclusion: { in: CAUTION_LEVELS }
   validates :category, inclusion: { in: CATEGORIES }
   validates :purpose, presence: true
   validates :ai_generated, inclusion: { in: [ true, false ] }
+
+  # 成分名・読みの正規化: 全角英数→半角・半角カナ→全角(NFKC)、ひらがな→カタカナ、空白をすべて除去
+  def self.normalize_name(str)
+    str.to_s.unicode_normalize(:nfkc).tr("ぁ-ゖ", "ァ-ヶ").gsub(/\s+/, "")
+  end
+
+  # INCI名の正規化: NFKC のあと、前後の空白を除いて連続する空白を1つにする(英単語の区切りは残す)
+  def self.normalize_inci_name(str)
+    str.to_s.unicode_normalize(:nfkc).squish
+  end
+
+  # 表記ゆれに対応するあいまい検索。似ている成分を類似度(score: 0〜1)の高い順に返す
+  # 名前・読みは normalize_name、INCI名は normalize_inci_name でそろえた検索語と比べる
+  def self.fuzzy_search(query)
+    name_query = normalize_name(query)
+    return none if name_query.empty?
+
+    binds = { name_query: name_query, inci_query: normalize_inci_name(query) }
+    score = sanitize_sql_array([
+      "GREATEST(similarity(name, :name_query), similarity(reading, :name_query), similarity(inci_name, :inci_query)) AS score",
+      binds
+    ])
+
+    select("ingredients.*", score)
+      .where("name % :name_query OR reading % :name_query OR inci_name % :inci_query", binds)
+      .order("score DESC", :reading)
+  end
 end
