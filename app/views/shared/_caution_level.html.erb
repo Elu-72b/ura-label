@@ -1,0 +1,6 @@
+<%# 注意度を「数字+ラベル」で表示する(色だけで伝えない) %>
+<%# locals: (level:) %>
+<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold <%= caution_badge_class(level) %>">
+  <span class="text-base font-bold"><%= level %></span>
+  <span><%= caution_label(level) %></span>
+</span>

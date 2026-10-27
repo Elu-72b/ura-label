@@ -11,4 +11,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # 注意度について(判定基準の説明)
+  get "caution", to: "pages#caution"
 end
