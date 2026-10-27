@@ -1,0 +1,88 @@
+<% content_for :title, "注意度について" %>
+
+<article class="space-y-8">
+  <header>
+    <h1 class="text-2xl font-bold">注意度について</h1>
+    <p class="mt-2 leading-relaxed">
+      うらラベルでは、成分ごとに<strong>注意度1〜5(刺激リスクの目安)</strong>を表示しています。
+      このページでは、注意度の決め方を説明します。
+    </p>
+  </header>
+
+  <section aria-labelledby="premise-heading">
+    <h2 id="premise-heading" class="text-lg font-bold">前提</h2>
+    <ul class="mt-2 list-disc space-y-1 pl-5 leading-relaxed">
+      <li>注意度は本アプリ独自の参考指標であり、公的機関による評価そのものではありません。</li>
+      <li>成分単体についての目安であり、その成分を含む製品全体の評価ではありません(配合濃度や組み合わせによって異なります)。</li>
+      <li>肌への影響には個人差があり、注意度1の成分でも肌に合わない場合があります。</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="criteria-heading">
+    <h2 id="criteria-heading" class="text-lg font-bold">判定基準</h2>
+    <p class="mt-2 text-sm text-gray-700">画面上では色だけでなく、必ず数字(1〜5)を併記しています。</p>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full min-w-[32rem] text-left text-sm">
+        <thead>
+          <tr class="border-b border-gray-300">
+            <th scope="col" class="py-2 pr-3">注意度</th>
+            <th scope="col" class="py-2 pr-3">基準</th>
+            <th scope="col" class="py-2">例</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% [
+               [ 1, "公的リストで懸念の記載がなく、長年広く使用されている基礎成分", "水、グリセリン、BG" ],
+               [ 2, "一般に刺激性が低いとされるが、ごく稀に刺激・アレルギーの報告がある", "ヒアルロン酸Na、スクワラン等の一部" ],
+               [ 3, "旧表示指定成分に該当する、または肌質・体質によって刺激やアレルギーの可能性が指摘されている", "パラベン類、エタノール" ],
+               [ 4, "旧表示指定成分に該当し、かつ刺激・アレルギーの報告が比較的多い", "一部の合成香料・着色料" ],
+               [ 5, "公的機関(EU等)で配合濃度や用途の制限があり、注意喚起が多い", "一部の紫外線吸収剤・防腐剤" ]
+             ].each do |level, criterion, examples| %>
+            <tr>
+              <th scope="row" class="py-3 pr-3 align-top font-normal whitespace-nowrap">
+                <%= render "shared/caution_level", level: level %>
+              </th>
+              <td class="py-3 pr-3 align-top leading-relaxed"><%= criterion %></td>
+              <td class="py-3 align-top leading-relaxed"><%= examples %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="flow-heading">
+    <h2 id="flow-heading" class="text-lg font-bold">判定の流れ</h2>
+    <ol class="mt-2 list-decimal space-y-2 pl-5 leading-relaxed">
+      <li>
+        公的な情報を最優先で確認します。
+        <ul class="mt-1 list-disc pl-5">
+          <li>旧表示指定成分(昭和55年厚生省告示)に該当するか</li>
+          <li>EU CosIng で配合の制限(Annex)の対象になっているか</li>
+        </ul>
+      </li>
+      <li>該当する情報がなければ、配合目的・使用実績・刺激性に関する一般的な知見から判定します。</li>
+      <li>判断材料が不足する場合は注意度3(中間)とし、断定的な表示をしません。</li>
+    </ol>
+    <p class="mt-3 text-sm leading-relaxed text-gray-700">
+      登録されていない成分や、情報を取得できなかった成分には注意度を表示しません(注意度3とは別の扱いです)。
+    </p>
+  </section>
+
+  <section aria-labelledby="sources-heading">
+    <h2 id="sources-heading" class="text-lg font-bold">出典</h2>
+    <ul class="mt-2 list-disc space-y-1 pl-5 leading-relaxed">
+      <li>旧表示指定成分(昭和55年厚生省告示)</li>
+      <li>EU CosIng(Source: European Commission — CosIng, Cosmetic ingredient database)</li>
+      <li>医薬部外品原料規格</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="notice-heading">
+    <h2 id="notice-heading" class="text-lg font-bold">ご利用にあたって</h2>
+    <p class="mt-2 leading-relaxed">
+      本基準および本アプリの表示は参考情報であり、医学的助言ではありません。
+      肌トラブルが生じた場合は使用を中止し、専門医にご相談ください。
+    </p>
+  </section>
+</article>
