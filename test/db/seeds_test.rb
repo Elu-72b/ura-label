@@ -6,9 +6,6 @@ class SeedsTest < ActiveSupport::TestCase
   # seed の成分の件数。seed の成分を増やしたり減らしたりしたら、ここも変える
   SEED_COUNT = 18
 
-  # 「用語と表現のルール」で使わない言葉
-  FORBIDDEN_WORDS = %w[危険 有害 安全 無害].freeze
-
   setup do
     # fixture と同じ名前の成分があると、find_or_create_by! が既存の行を使い、seed の値を検証できないため消す
     # (テストごとのトランザクションの中なので、テストが終われば元に戻る)
@@ -30,13 +27,11 @@ class SeedsTest < ActiveSupport::TestCase
     assert_empty low_caution.pluck(:name)
   end
 
-  test "配合目的・説明に断定的な言葉を使っていない" do
+  test "配合目的・説明に、断定的な言葉や効能効果をうたう表現を使っていない" do
     Rails.application.load_seed
     Ingredient.find_each do |ingredient|
       text = [ ingredient.purpose, ingredient.description ].compact.join
-      FORBIDDEN_WORDS.each do |word|
-        assert_not_includes text, word, "#{ingredient.name} の説明に「#{word}」が含まれている"
-      end
+      assert_no_forbidden_expressions(text, "#{ingredient.name} の説明")
     end
   end
 end

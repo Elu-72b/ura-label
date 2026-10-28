@@ -15,7 +15,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "tbody tr:last-child th", text: /5\s*高め/
   end
 
-  test "断定的な言葉を使っていない" do
+  test "断定的な言葉や効能効果をうたう表現を使っていない" do
     get caution_path
     assert_no_forbidden_words
   end
