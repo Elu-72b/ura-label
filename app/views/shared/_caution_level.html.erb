@@ -1,6 +1,8 @@
 <%# 注意度を「数字+ラベル」で表示する(色だけで伝えない) %>
+<%# 「注意度」の文字は画面に出さず、スクリーンリーダーだけが読み上げる(「注意度 3 中程度」) %>
 <%# locals: (level:) %>
 <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold <%= caution_badge_class(level) %>">
+  <span class="sr-only">注意度</span>
   <span class="text-base font-bold"><%= level %></span>
   <span><%= caution_label(level) %></span>
 </span>
