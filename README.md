@@ -196,7 +196,7 @@ docker compose exec web bin/bundler-audit
 
 ## 出典
 
-- 旧表示指定成分(厚生省告示 第331号)
+- 旧表示指定成分(昭和55年厚生省告示)
 - EU CosIng(Source: European Commission — CosIng, Cosmetic ingredient database)
 - 医薬部外品原料規格
 
