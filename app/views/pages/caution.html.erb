@@ -31,19 +31,14 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <% [
-               [ 1, "公的リストで懸念の記載がなく、長年広く使用されている基礎成分", "水、グリセリン、BG" ],
-               [ 2, "一般に刺激性が低いとされるが、ごく稀に刺激・アレルギーの報告がある", "ヒアルロン酸Na、スクワラン等の一部" ],
-               [ 3, "旧表示指定成分に該当する、または肌質・体質によって刺激やアレルギーの可能性が指摘されている", "パラベン類、エタノール" ],
-               [ 4, "旧表示指定成分に該当し、かつ刺激・アレルギーの報告が比較的多い", "一部の合成香料・着色料" ],
-               [ 5, "公的機関(EU等)で配合濃度や用途の制限があり、注意喚起が多い", "一部の紫外線吸収剤・防腐剤" ]
-             ].each do |level, criterion, examples| %>
+          <% Ingredient::CAUTION_LEVELS.each do |level| %>
+            <% criterion = caution_criterion(level) %>
             <tr>
               <th scope="row" class="py-3 pr-3 align-top font-normal whitespace-nowrap">
                 <%= render "shared/caution_level", level: level %>
               </th>
-              <td class="py-3 pr-3 align-top leading-relaxed"><%= criterion %></td>
-              <td class="py-3 align-top leading-relaxed"><%= examples %></td>
+              <td class="py-3 pr-3 align-top leading-relaxed"><%= criterion[:description] %></td>
+              <td class="py-3 align-top leading-relaxed"><%= criterion[:examples] %></td>
             </tr>
           <% end %>
         </tbody>

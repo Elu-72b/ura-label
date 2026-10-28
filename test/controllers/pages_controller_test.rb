@@ -13,6 +13,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "tbody tr", 5
     assert_select "tbody tr:first-child th", text: /1\s*低め/
     assert_select "tbody tr:last-child th", text: /5\s*高め/
+    assert_select "tbody tr:first-child td", text: "公的リストで懸念の記載がなく、長年広く使用されている基礎成分"
+    assert_select "tbody tr:last-child td", text: "一部の紫外線吸収剤・防腐剤"
   end
 
   test "断定的な言葉や効能効果をうたう表現を使っていない" do
