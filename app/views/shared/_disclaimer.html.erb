@@ -1,0 +1,16 @@
+<%# 全ページ共通の免責事項。レイアウトの <footer> の中で呼ぶため、<section> で囲む %>
+<%# 機能を追加したら項目を足す(AI生成: フェーズ3、画像の読み取り: フェーズ5) %>
+<section aria-labelledby="disclaimer-heading" class="text-xs leading-relaxed text-gray-700">
+  <h2 id="disclaimer-heading" class="font-semibold">ご利用にあたって</h2>
+  <ul class="mt-1 list-disc space-y-1 pl-4">
+    <li>注意度は本アプリ独自の参考指標(刺激リスクの目安)であり、公的機関による評価ではありません。</li>
+    <li>注意度は成分単体についての目安で、その成分を含む製品全体の評価ではありません。配合濃度や組み合わせによって異なります。</li>
+    <li>肌への影響には個人差があり、注意度が低い成分でも肌に合わない場合があります。</li>
+    <li>情報の正確性・最新性は保証しておらず、本アプリの利用により生じた損害について責任を負いかねます。</li>
+    <li>本アプリの情報は医学的助言ではありません。肌トラブルが生じた場合は使用を中止し、専門医にご相談ください。</li>
+  </ul>
+  <p class="mt-2">
+    成分データの出典: 旧表示指定成分(昭和55年厚生省告示)、EU CosIng(Source: European Commission — CosIng)ほか。
+    <%= link_to "注意度について", caution_path, class: "underline" %>
+  </p>
+</section>
