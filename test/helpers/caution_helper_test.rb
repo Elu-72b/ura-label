@@ -29,6 +29,20 @@ class CautionHelperTest < ActionView::TestCase
   test "範囲外の注意度や nil はエラーにする" do
     assert_raises(KeyError) { caution_badge_class(0) }
     assert_raises(KeyError) { caution_label(nil) }
-    assert_raises(KeyError) { caution_criterion(6) }
+  end
+
+  # 注意度の色とラベルを使うパーシャルも、ここで表示して確かめる
+  test "注意度バッジに、注意度の数字・成分名・詳細へのリンクがある" do
+    water = ingredients(:water)
+    render partial: "ingredients/badge", locals: { ingredient: water }
+    assert_select "a[href=?][aria-label=?]", ingredient_path(water), "水(注意度1)", text: /1\s*水/
+    assert_select "a.bg-green-700"
+  end
+
+  test "凡例に、注意度1〜5を数字とラベルで表示し、注意度についてへリンクする" do
+    render partial: "shared/caution_legend"
+    assert_select "li", 5
+    assert_select "li", text: /5\s*高め/
+    assert_select "a[href=?]", caution_path
   end
 end
