@@ -1,0 +1,10 @@
+<%# 注意度バッジ。成分詳細へのリンク。色だけに頼らず、注意度の数字を必ず表示する %>
+<%# locals: (ingredient:) %>
+<%= link_to ingredient_path(ingredient),
+      aria: { label: "#{ingredient.name}(注意度#{ingredient.caution_level})" },
+      class: "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium #{caution_badge_class(ingredient.caution_level)}" do %>
+  <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-xs font-bold text-gray-900">
+    <%= ingredient.caution_level %>
+  </span>
+  <span><%= ingredient.name %></span>
+<% end %>
