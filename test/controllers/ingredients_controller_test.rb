@@ -1,6 +1,30 @@
 require "test_helper"
 
 class IngredientsControllerTest < ActionDispatch::IntegrationTest
+  test "成分辞典に、登録済みの成分を五十音順に表示する" do
+    get ingredients_path
+    assert_response :success
+    assert_select "title", "成分辞典 | うらラベル"
+    names = css_select("li a span:last-child").map { |span| span.text.strip }
+    assert_equal [ "エチルパラベン", "水", "メチルパラベン" ], names
+  end
+
+  test "成分辞典の各成分に、注意度の数字つきバッジと詳細へのリンクがある" do
+    get ingredients_path
+    assert_select "a[href=?][aria-label=?]", ingredient_path(ingredients(:water)), "水(注意度1)", text: /1\s*水/
+  end
+
+  test "成分辞典に件数と凡例を表示する" do
+    get ingredients_path
+    assert_select "p", "3件"
+    assert_select "ul li", text: /5\s*高め/
+  end
+
+  test "成分辞典で断定的な言葉を使っていない" do
+    get ingredients_path
+    assert_no_forbidden_words
+  end
+
   test "成分詳細に成分名・注意度・配合目的・出典を表示する" do
     get ingredient_path(ingredients(:methylparaben))
     assert_response :success

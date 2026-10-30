@@ -15,6 +15,6 @@ Rails.application.routes.draw do
   # 注意度について(判定基準の説明)
   get "caution", to: "pages#caution"
 
-  # 成分詳細
-  resources :ingredients, only: [ :show ]
+  # 成分辞典(一覧)・成分詳細
+  resources :ingredients, only: [ :index, :show ]
 end
