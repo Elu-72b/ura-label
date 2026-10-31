@@ -1,0 +1,46 @@
+<% content_for :title, "成分辞典" %>
+
+<h1 class="text-2xl font-bold">成分辞典</h1>
+<p class="mt-2 text-sm text-gray-700">登録されている成分を五十音順に並べています。成分名を選ぶと詳細を表示します。</p>
+
+<%= form_with url: ingredients_path, method: :get, class: "mt-4 flex flex-wrap items-end gap-3" do |f| %>
+  <div>
+    <%= f.label :caution_level, "注意度", class: "block text-sm font-semibold" %>
+    <%= f.select :caution_level,
+          Ingredient::CAUTION_LEVELS.map { |level| [ "#{level}(#{caution_label(level)})", level ] },
+          { include_blank: "すべて", selected: @caution_level },
+          class: "mt-1 rounded border border-gray-400 px-2 py-2" %>
+  </div>
+  <div>
+    <%= f.label :category, "配合目的の分類", class: "block text-sm font-semibold" %>
+    <%= f.select :category, Ingredient::CATEGORIES,
+          { include_blank: "すべて", selected: @category },
+          class: "mt-1 rounded border border-gray-400 px-2 py-2" %>
+  </div>
+  <%= f.submit "絞り込む", name: nil, class: "rounded bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800" %>
+  <% if @caution_level || @category %>
+    <%= link_to "条件をクリア", ingredients_path, class: "py-2 text-sm underline" %>
+  <% end %>
+<% end %>
+
+<div class="mt-4">
+  <%= render "shared/caution_legend" %>
+</div>
+
+<p class="mt-6 text-sm"><%= @ingredients.size %>件</p>
+<% if @ingredients.any? %>
+  <ul class="mt-2 divide-y divide-gray-200">
+    <% @ingredients.each do |ingredient| %>
+      <li class="flex flex-wrap items-center gap-2 py-3">
+        <%= render "ingredients/badge", ingredient: ingredient %>
+        <%= render "shared/ai_tag" if ingredient.ai_generated? %>
+        <span class="text-sm text-gray-700"><%= ingredient.category %></span>
+      </li>
+    <% end %>
+  </ul>
+  <div class="mt-4">
+    <%= render "shared/caution_note" %>
+  </div>
+<% else %>
+  <p class="mt-2">表示できる成分はありません。</p>
+<% end %>

@@ -1,6 +1,62 @@
 require "test_helper"
 
 class IngredientsControllerTest < ActionDispatch::IntegrationTest
+  test "成分辞典に、登録済みの成分を五十音順に表示する" do
+    get ingredients_path
+    assert_response :success
+    assert_select "title", "成分辞典 | うらラベル"
+    names = css_select("li a span:last-child").map { |span| span.text.strip }
+    assert_equal [ "エチルパラベン", "水", "メチルパラベン" ], names
+  end
+
+  test "成分辞典の各成分に、注意度の数字つきバッジと詳細へのリンクがある" do
+    get ingredients_path
+    assert_select "a[href=?][aria-label=?]", ingredient_path(ingredients(:water)), "水(注意度1)", text: /1\s*水/
+  end
+
+  test "成分辞典に件数と凡例を表示する" do
+    get ingredients_path
+    assert_select "p", "3件"
+    assert_select "ul li", text: /5\s*高め/
+  end
+
+  test "成分辞典で断定的な言葉を使っていない" do
+    get ingredients_path
+    assert_no_forbidden_words
+  end
+
+  test "成分辞典を注意度で絞り込める" do
+    get ingredients_path, params: { caution_level: 1 }
+    assert_select "p", "1件"
+    assert_select "a[href=?]", ingredient_path(ingredients(:water))
+    assert_select "option[selected][value=?]", "1"
+  end
+
+  test "成分辞典を配合目的の分類で絞り込める" do
+    get ingredients_path, params: { category: "防腐" }
+    assert_select "p", "2件"
+    assert_select "a[href=?]", ingredient_path(ingredients(:water)), 0
+  end
+
+  test "注意度と分類を組み合わせて絞り込める" do
+    get ingredients_path, params: { caution_level: 1, category: "防腐" }
+    assert_select "p", "0件"
+    assert_select "p", "表示できる成分はありません。"
+  end
+
+  test "範囲外の注意度や一覧にない分類は、絞り込みなしとして扱う" do
+    get ingredients_path, params: { caution_level: 9, category: "不明" }
+    assert_response :success
+    assert_select "p", "3件"
+    assert_select "a", text: "条件をクリア", count: 0
+  end
+
+  test "絞り込みの値に配列が送られても、エラーにしない" do
+    get ingredients_path, params: { caution_level: [ "1" ] }
+    assert_response :success
+    assert_select "p", "3件"
+  end
+
   test "成分詳細に成分名・注意度・配合目的・出典を表示する" do
     get ingredient_path(ingredients(:methylparaben))
     assert_response :success
