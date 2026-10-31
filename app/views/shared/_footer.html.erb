@@ -1,6 +1,12 @@
 <%# 全ページ共通のフッター %>
 <footer class="mt-12 border-t border-gray-200 bg-gray-50">
   <div class="mx-auto max-w-3xl space-y-6 px-4 py-8">
+    <nav aria-label="フッターメニュー">
+      <ul class="flex flex-wrap gap-x-6">
+        <li><%= footer_nav_link "成分入力", root_path %></li>
+        <li><%= footer_nav_link "成分辞典", ingredients_path %></li>
+      </ul>
+    </nav>
     <%= render "shared/disclaimer" %>
   </div>
 </footer>

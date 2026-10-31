@@ -1,0 +1,22 @@
+<% content_for :title, "成分入力" %>
+
+<h1 class="text-2xl font-bold">成分を調べる</h1>
+<p class="mt-2 text-sm leading-relaxed text-gray-700">
+  製品の裏ラベルに書かれている成分名を1つ入力してください。ひらがな・カタカナ・INCI名(英語の成分名)でも探せます。
+</p>
+
+<%= form_with url: root_path, method: :get, class: "mt-4 flex flex-wrap items-end gap-2" do |f| %>
+  <div class="min-w-0 flex-1">
+    <%= f.label :q, "成分名", class: "block text-sm font-semibold" %>
+    <%= f.search_field :q, value: @query, required: true, maxlength: SearchesController::MAX_QUERY_LENGTH,
+          placeholder: "例: メチルパラベン", class: "mt-1 w-full rounded border border-gray-400 px-3 py-2" %>
+  </div>
+  <%= f.submit "調べる", name: nil, class: "rounded bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800" %>
+<% end %>
+
+<% if @result %>
+  <section aria-labelledby="result-heading" class="mt-8 space-y-4">
+    <h2 id="result-heading" class="text-lg font-bold">「<%= @query %>」の検索結果</h2>
+    <%= render "searches/result", result: @result %>
+  </section>
+<% end %>

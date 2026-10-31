@@ -1,0 +1,32 @@
+<%# 成分入力ページの検索結果。IngredientLookup::Result の status で表示を分ける %>
+<%# locals: (result:) %>
+<% case result.status %>
+<% when :found %>
+  <%= render "shared/caution_legend" %>
+  <div class="rounded-lg border border-gray-200 p-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <%= render "ingredients/badge", ingredient: result.ingredient %>
+      <%= render "shared/ai_tag" if result.ingredient.ai_generated? %>
+    </div>
+    <p class="mt-2 text-sm"><%= result.ingredient.purpose %></p>
+  </div>
+  <%= render "shared/caution_note" %>
+<% when :suggestions %>
+  <p>「<%= result.query %>」に近い成分が登録されています。調べたい成分を選んでください(この時点では注意度を表示していません)。</p>
+  <div>
+    <p class="font-semibold">もしかして:</p>
+    <ul class="mt-2 flex flex-wrap gap-2">
+      <% result.suggestions.each do |suggestion| %>
+        <li>
+          <%= link_to suggestion.name, root_path(q: suggestion.name),
+                class: "inline-block rounded-full border border-gray-400 px-3 py-1 text-sm hover:bg-gray-100" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% when :not_found %>
+  <p>「<%= result.query %>」の情報を取得できませんでした。注意度は表示していません。</p>
+  <p class="text-sm text-gray-700">
+    表記を変えて(ひらがな・カタカナ・INCI名など)もう一度検索するか、<%= link_to "成分辞典", ingredients_path, class: "underline" %>から探してください。
+  </p>
+<% end %>

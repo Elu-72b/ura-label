@@ -9,8 +9,8 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # 成分入力ページ(トップ)。成分名を ?q= で受け取り、同じページに結果を表示する
+  root "searches#index"
 
   # 注意度について(判定基準の説明)
   get "caution", to: "pages#caution"
