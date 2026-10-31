@@ -12,4 +12,15 @@ class IngredientsHelperTest < ActionView::TestCase
     assert_nil source_link_url("")
     assert_nil source_link_url(nil)
   end
+
+  test "注意度タグのリンク先は、選択していない注意度を小さい順に足す" do
+    assert_equal ingredients_path(caution_level: [ 1 ]), caution_filter_path(1, [], nil)
+    assert_equal ingredients_path(caution_level: [ 1, 3 ]), caution_filter_path(1, [ 3 ], nil)
+  end
+
+  test "注意度タグのリンク先は、選択中の注意度を外し、分類の条件を保つ" do
+    assert_equal ingredients_path(caution_level: [ 3 ], category: "防腐"), caution_filter_path(1, [ 1, 3 ], "防腐")
+    assert_equal ingredients_path(category: "防腐"), caution_filter_path(1, [ 1 ], "防腐")
+    assert_equal ingredients_path, caution_filter_path(1, [ 1 ], nil)
+  end
 end
