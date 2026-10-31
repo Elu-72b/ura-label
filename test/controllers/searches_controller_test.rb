@@ -34,6 +34,12 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name=q][value=?]", "ア" * 100
   end
 
+  test "入力にヌル文字が含まれていても、エラーにせず検索する" do
+    get root_path, params: { q: "メチル\u0000パラベン" }
+    assert_response :success
+    assert_select "a[href=?]", ingredient_path(ingredients(:methylparaben))
+  end
+
   test "検索結果で断定的な言葉を使っていない" do
     [ "メチルパラベン", "メチルパラベソ", "ゾウリムシエキス" ].each do |query|
       get root_path, params: { q: query }

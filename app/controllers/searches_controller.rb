@@ -4,7 +4,7 @@ class SearchesController < ApplicationController
   MAX_QUERY_LENGTH = 100
 
   def index
-    @query = params[:q].to_s.strip.first(MAX_QUERY_LENGTH)
+    @query = params[:q].to_s.delete("\0").strip.first(MAX_QUERY_LENGTH)
     @result = IngredientLookup.call(@query) if @query.present?
   end
 end
