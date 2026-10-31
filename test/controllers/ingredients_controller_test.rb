@@ -5,7 +5,7 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     get ingredients_path
     assert_response :success
     assert_select "title", "成分辞典 | うらラベル"
-    names = css_select("li a span:last-child").map { |span| span.text.strip }
+    names = css_select("ul.divide-y a span:last-child").map { |span| span.text.strip }
     assert_equal [ "エチルパラベン", "水", "メチルパラベン" ], names
   end
 
@@ -13,11 +13,11 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     get ingredients_path
     assert_select "a[href=?][aria-label=?]", ingredient_path(ingredients(:water)), "水(注意度1)", text: /1\s*水/
   end
-
-  test "成分辞典に件数と凡例を表示する" do
+  test "成分辞典に件数と注意度のタグ、注意度についてへのリンクを表示する" do
     get ingredients_path
     assert_select "p", "3件"
-    assert_select "ul li", text: /5\s*高め/
+    assert_select "ul li a", text: /5\s*高め/
+    assert_select "main a[href=?]", caution_path
   end
 
   test "成分辞典で断定的な言葉を使っていない" do
@@ -26,10 +26,11 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "成分辞典を注意度で絞り込める" do
-    get ingredients_path, params: { caution_level: 1 }
+    get ingredients_path, params: { caution_level: [ 1 ] }
     assert_select "p", "1件"
     assert_select "a[href=?]", ingredient_path(ingredients(:water))
-    assert_select "option[selected][value=?]", "1"
+    assert_select "span.sr-only", text: "選択中", count: 1
+    assert_select "a", text: "条件をクリア"
   end
 
   test "成分辞典を配合目的の分類で絞り込める" do
@@ -39,22 +40,50 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "注意度と分類を組み合わせて絞り込める" do
-    get ingredients_path, params: { caution_level: 1, category: "防腐" }
+    get ingredients_path, params: { caution_level: [ 1 ], category: "防腐" }
     assert_select "p", "0件"
     assert_select "p", "表示できる成分はありません。"
   end
 
   test "範囲外の注意度や一覧にない分類は、絞り込みなしとして扱う" do
-    get ingredients_path, params: { caution_level: 9, category: "不明" }
+    get ingredients_path, params: { caution_level: [ 9, "abc" ], category: "不明" }
     assert_response :success
     assert_select "p", "3件"
+    assert_select "span.sr-only", text: "選択中", count: 0
     assert_select "a", text: "条件をクリア", count: 0
   end
 
-  test "絞り込みの値に配列が送られても、エラーにしない" do
-    get ingredients_path, params: { caution_level: [ "1" ] }
+  test "想定外の形式の注意度が送られても、エラーにしない" do
+    get ingredients_path, params: { caution_level: { a: "1" } }
     assert_response :success
     assert_select "p", "3件"
+  end
+
+  test "注意度が1つの値で送られても、絞り込める" do
+    get ingredients_path, params: { caution_level: "1" }
+    assert_select "p", "1件"
+  end
+
+  test "複数の注意度を選ぶと、どれかに当てはまる成分を表示する" do
+    ingredients(:ethylparaben).update!(caution_level: 5)
+    get ingredients_path, params: { caution_level: [ 1, 3 ] }
+    assert_select "p", "2件"
+    assert_select "a[href=?]", ingredient_path(ingredients(:water))
+    assert_select "a[href=?]", ingredient_path(ingredients(:methylparaben))
+    assert_select "a[href=?]", ingredient_path(ingredients(:ethylparaben)), 0
+    assert_select "span.sr-only", text: "選択中", count: 2
+  end
+
+  test "注意度タグのリンクは、選択を切り替え、分類の条件を保つ" do
+    get ingredients_path, params: { caution_level: [ 1 ], category: "防腐" }
+    assert_select "a[href=?]", ingredients_path(category: "防腐")
+    assert_select "a[href=?]", ingredients_path(caution_level: [ 1, 3 ], category: "防腐")
+  end
+
+  test "分類のフォームは、選択中の注意度を保つ" do
+    get ingredients_path, params: { caution_level: [ 1, 3 ] }
+    assert_select "form input[type=hidden][name=?][value=?]", "caution_level[]", "1"
+    assert_select "form input[type=hidden][name=?][value=?]", "caution_level[]", "3"
   end
 
   test "成分詳細に成分名・注意度・配合目的・出典を表示する" do

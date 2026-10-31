@@ -1,0 +1,22 @@
+<%# 注意度タグの絞り込み。押すと選択を切り替えて、すぐに絞り込む(複数選べる) %>
+<%# locals: (selected_levels:, category:) %>
+<div class="rounded-lg border border-gray-200 p-3">
+  <p class="text-sm font-semibold">注意度(刺激リスクの目安)で絞り込む</p>
+  <p class="mt-1 text-xs text-gray-700">タグを押すと絞り込みます。複数選ぶと、どれかに当てはまる成分を表示します。</p>
+  <ul class="mt-2 flex flex-wrap gap-3">
+    <% Ingredient::CAUTION_LEVELS.each do |level| %>
+      <% selected = selected_levels.include?(level) %>
+      <li>
+        <%= link_to caution_filter_path(level, selected_levels, category),
+              class: "inline-flex items-center gap-1 rounded-full text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 #{"ring-2 ring-gray-900 ring-offset-2" if selected}" do %>
+          <% if selected %>
+            <span aria-hidden="true" class="pl-1 font-bold">✓</span>
+            <span class="sr-only">選択中</span>
+          <% end %>
+          <%= render "shared/caution_level", level: level %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <p class="mt-2 text-xs"><%= link_to "注意度について", caution_path, class: "underline" %></p>
+</div>
