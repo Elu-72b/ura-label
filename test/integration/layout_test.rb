@@ -24,4 +24,15 @@ class LayoutTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?]", caution_path
     end
   end
+
+  test "フッターメニューの今いるページのリンクに aria-current を付ける" do
+    get ingredients_path, params: { caution_level: [ 3 ] }
+    assert_select "footer nav a[href=?][aria-current=page]", ingredients_path, text: "成分辞典"
+  end
+
+  test "ほかのページでは、フッターメニューのリンクに aria-current を付けない" do
+    get caution_path
+    assert_select "footer nav a[href=?]", ingredients_path
+    assert_select "footer nav a[aria-current]", 0
+  end
 end
