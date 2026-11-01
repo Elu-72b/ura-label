@@ -20,3 +20,6 @@
     <%= render "searches/result", result: @result %>
   </section>
 <% end %>
+
+<%# 成分詳細のモーダルを入れる枠(バッジの data-turbo-frame="modal" で中身が入る) %>
+<%= turbo_frame_tag "modal" %>

@@ -136,4 +136,30 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     get ingredient_path(ingredients(:methylparaben))
     assert_no_forbidden_words
   end
+
+  test "成分辞典のバッジは、成分詳細をモーダルの枠に開く" do
+    get ingredients_path
+    assert_select "a[data-turbo-frame=modal][href=?]", ingredient_path(ingredients(:water))
+    assert_select "turbo-frame#modal"
+  end
+
+  test "枠から開いたときは、成分詳細をモーダルとして返す" do
+    get ingredient_path(ingredients(:water)), headers: { "Turbo-Frame" => "modal" }
+    assert_select "turbo-frame#modal [role=dialog][aria-modal=true][aria-labelledby=ingredient-name]"
+    assert_select "#ingredient-name", "水"
+    assert_select "button", "閉じる"
+    assert_select "footer", 0
+  end
+
+  test "モーダルの中の注意度についてのリンクは、ページ全体を移動する" do
+    get ingredient_path(ingredients(:water)), headers: { "Turbo-Frame" => "modal" }
+    assert_select "a[href=?][data-turbo-frame=_top]", caution_path
+  end
+
+  test "URL を直接開いたときは、通常のページとして表示する" do
+    get ingredient_path(ingredients(:water))
+    assert_select "[role=dialog]", 0
+    assert_select "h1", "水"
+    assert_select "footer"
+  end
 end
