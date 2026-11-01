@@ -16,5 +16,7 @@ Rails.application.routes.draw do
   get "caution", to: "pages#caution"
 
   # 成分辞典(一覧)・成分詳細
-  resources :ingredients, only: [ :index, :show ]
+  resources :ingredients, only: [ :index, :show ] do
+    collection { get :suggestions }
+  end
 end

@@ -164,4 +164,28 @@ class IngredientTest < ActiveSupport::TestCase
     assert_empty Ingredient.fuzzy_search(" 　").to_a
     assert_empty Ingredient.fuzzy_search(nil).to_a
   end
+
+  test "autocomplete はひらがなから登録済みの成分を候補にする" do
+    assert_equal [ ingredients(:water) ], Ingredient.autocomplete("みず").to_a
+    assert_equal [ ingredients(:methylparaben) ], Ingredient.autocomplete("めちる").to_a
+  end
+
+  test "autocomplete は語の途中でも見つけ、INCI名は大文字・小文字を区別しない" do
+    assert_equal [ ingredients(:ethylparaben), ingredients(:methylparaben) ], Ingredient.autocomplete("ぱらべん").to_a
+    assert_equal [ ingredients(:water) ], Ingredient.autocomplete("WAT").to_a
+  end
+
+  test "autocomplete は前方一致を先に並べる" do
+    assert_equal ingredients(:methylparaben), Ingredient.autocomplete("Methyl").first
+  end
+
+  test "autocomplete は含まれる成分がなければ、誤字の候補を返す" do
+    assert_equal ingredients(:methylparaben), Ingredient.autocomplete("メチルパラベソ").first
+  end
+
+  test "autocomplete は LIKE の記号をそのままの文字として扱い、空の入力では何も返さない" do
+    assert_empty Ingredient.autocomplete("%").to_a
+    assert_empty Ingredient.autocomplete("_").to_a
+    assert_empty Ingredient.autocomplete(" ").to_a
+  end
 end
