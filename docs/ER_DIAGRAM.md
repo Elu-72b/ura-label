@@ -29,16 +29,16 @@ erDiagram
         string source_url "出典URL"
         date source_accessed_on "参照日"
         boolean ai_generated "AI生成か NOT NULL default false"
-        string verification_status "確認状態 unverified・verified NOT NULL default unverified(フェーズ3)ai_generatedとは別"
-        datetime ai_generated_at "AI生成日(フェーズ3)AI生成なら必須"
-        datetime manually_edited_at "最終編集日・手動(フェーズ3)"
+        string verification_status "確認状態 unverified・verified NOT NULL default unverified(フェーズ5)ai_generatedとは別"
+        datetime ai_generated_at "AI生成日(フェーズ5)AI生成なら必須"
+        datetime manually_edited_at "最終編集日・手動(フェーズ5)"
         datetime created_at
         datetime updated_at
     }
 
     ai_generation_usages {
         bigint id PK
-        date used_on UK "利用日(日本時間)NOT NULL(フェーズ3)"
+        date used_on UK "利用日(日本時間)NOT NULL(フェーズ5)"
         integer generated_count "AI生成の枠を確保した件数 NOT NULL default 0"
         datetime created_at
         datetime updated_at
@@ -46,10 +46,10 @@ erDiagram
 
     users {
         bigint id PK
-        string email_address UK "NOT NULL(フェーズ7)"
+        string email_address UK "NOT NULL(フェーズ8)"
         string password_digest "NOT NULL"
         boolean save_search_history "NOT NULL default false"
-        boolean admin "NOT NULL default false(フェーズ9)"
+        boolean admin "NOT NULL default false(フェーズ10)"
         datetime created_at
         datetime updated_at
     }
@@ -85,10 +85,10 @@ erDiagram
 
 | テーブル                                    | フェーズ                                                                        |
 | ------------------------------------------- | ------------------------------------------------------------------------------- |
-| `ingredients`                               | 1(`verification_status` / `ai_generated_at` / `manually_edited_at` は 3 で追加) |
-| `ai_generation_usages`                      | 3                                                                               |
-| `users` / `sessions`                        | 7(`admin` は 9 で追加)                                                          |
-| `favorite_ingredients` / `search_histories` | 7                                                                               |
+| `ingredients`                               | 1(`verification_status` / `ai_generated_at` / `manually_edited_at` は 5 で追加) |
+| `ai_generation_usages`                      | 5                                                                               |
+| `users` / `sessions`                        | 8(`admin` は 10 で追加)                                                         |
+| `favorite_ingredients` / `search_histories` | 8                                                                               |
 
 ## 設計の意図
 
@@ -108,8 +108,8 @@ erDiagram
 - **`purpose`**: NOT NULL(結果画面で必ず表示するため)
 - **aliases**: 今は持たない。表記ゆれは名前の正規化とあいまい検索で吸収する。必要になったら `ingredient_aliases` テーブルを提案する(別名もあいまい検索するなら、別テーブルのほうがインデックスを張りやすい)
 
-## フェーズ3で決めたこと
+## フェーズ5で決めたこと
 
 - **`verification_status`**: `unverified`(未確認・初期値)と `verified`(確認済み)の2つ。実施していない確認を `verified` にしない
-- **AI 生成の成分の出典**: `source` / `source_url` / `source_accessed_on` は空のまま保存する(AI が書いた URL は実在を保証できないため)。管理者がフェーズ9の編集画面で追記する。カラムの追加はない
+- **AI 生成の成分の出典**: `source` / `source_url` / `source_accessed_on` は空のまま保存する(AI が書いた URL は実在を保証できないため)。管理者がフェーズ10の編集画面で追記する。カラムの追加はない
 - **`ai_generation_usages`**: 他のテーブルとつながない。AI 生成の料金を抑える1日の上限(100件)を数えるだけで、誰が使ったかは記録しない。AI を呼ぶ前に枠を確保するので、成分ではないと判定された分や失敗した分も数えられる
