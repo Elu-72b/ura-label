@@ -1,3 +1,25 @@
 <% content_for :title, @ingredient.name %>
 
-<%= render "ingredients/detail", ingredient: @ingredient %>
+<% if turbo_frame_request? %>
+  <%# バッジから開いたとき: 開いているページの turbo_frame_tag "modal" の中身を、この部分に差し替える %>
+  <%= turbo_frame_tag "modal" do %>
+    <div data-controller="modal" data-action="keydown.esc@window->modal#close" data-turbo-temporary>
+      <%# 背景の半透明のオーバーレイ。クリックすると閉じる %>
+      <div class="fixed inset-0 z-40 bg-black/50" data-action="click->modal#close"></div>
+
+      <%# スマホ: 画面下からのボトムシート / PC(sm 以上): 画面中央のモーダル %>
+      <div role="dialog" aria-modal="true" aria-labelledby="ingredient-name"
+           class="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl
+                  sm:inset-x-auto sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl">
+        <div class="flex justify-end">
+          <button type="button" data-modal-target="closeButton" data-action="modal#close"
+                  class="rounded px-3 py-1 text-sm underline hover:bg-gray-100">閉じる</button>
+        </div>
+        <%= render "ingredients/detail", ingredient: @ingredient %>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <%# URL を直接開いたとき・新しいタブで開いたとき: 通常のページとして表示する %>
+  <%= render "ingredients/detail", ingredient: @ingredient %>
+<% end %>

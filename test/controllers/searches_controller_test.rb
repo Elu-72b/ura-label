@@ -11,7 +11,8 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "完全に一致した成分は、注意度バッジと配合目的を表示する" do
     get root_path, params: { q: "めちるぱらべん" }
-    assert_select "a[href=?]", ingredient_path(ingredients(:methylparaben)), text: /3\s*メチルパラベン/
+    assert_select "a[href=?][data-turbo-frame=modal]", ingredient_path(ingredients(:methylparaben)), text: /3\s*メチルパラベン/
+    assert_select "turbo-frame#modal"
     assert_select "p", "防腐剤として配合されることがある"
     assert_select "input[name=q][value=?]", "めちるぱらべん"
   end
