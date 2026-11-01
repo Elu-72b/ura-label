@@ -29,9 +29,17 @@ erDiagram
         string source_url "出典URL"
         date source_accessed_on "参照日"
         boolean ai_generated "AI生成か NOT NULL default false"
-        string verification_status "確認状態(フェーズ3)ai_generatedとは別"
-        datetime ai_generated_at "AI生成日(フェーズ3)"
+        string verification_status "確認状態 unverified・verified NOT NULL default unverified(フェーズ3)ai_generatedとは別"
+        datetime ai_generated_at "AI生成日(フェーズ3)AI生成なら必須"
         datetime manually_edited_at "最終編集日・手動(フェーズ3)"
+        datetime created_at
+        datetime updated_at
+    }
+
+    ai_generation_usages {
+        bigint id PK
+        date used_on UK "利用日(日本時間)NOT NULL(フェーズ3)"
+        integer generated_count "AI生成の枠を確保した件数 NOT NULL default 0"
         datetime created_at
         datetime updated_at
     }
@@ -78,6 +86,7 @@ erDiagram
 | テーブル                                    | フェーズ                                                                        |
 | ------------------------------------------- | ------------------------------------------------------------------------------- |
 | `ingredients`                               | 1(`verification_status` / `ai_generated_at` / `manually_edited_at` は 3 で追加) |
+| `ai_generation_usages`                      | 3                                                                               |
 | `users` / `sessions`                        | 7(`admin` は 9 で追加)                                                          |
 | `favorite_ingredients` / `search_histories` | 7                                                                               |
 
@@ -99,6 +108,8 @@ erDiagram
 - **`purpose`**: NOT NULL(結果画面で必ず表示するため)
 - **aliases**: 今は持たない。表記ゆれは名前の正規化とあいまい検索で吸収する。必要になったら `ingredient_aliases` テーブルを提案する(別名もあいまい検索するなら、別テーブルのほうがインデックスを張りやすい)
 
-## 未確定の点
+## フェーズ3で決めたこと
 
-- **`verification_status` の値**: フェーズ3(AI 生成の追加時)に、`ai_generated_at` / `manually_edited_at` と一緒に追加する。未確認・確認済みの2つか、ほかの状態も持つかはそのときに決める
+- **`verification_status`**: `unverified`(未確認・初期値)と `verified`(確認済み)の2つ。実施していない確認を `verified` にしない
+- **AI 生成の成分の出典**: `source` / `source_url` / `source_accessed_on` は空のまま保存する(AI が書いた URL は実在を保証できないため)。管理者がフェーズ9の編集画面で追記する。カラムの追加はない
+- **`ai_generation_usages`**: 他のテーブルとつながない。AI 生成の料金を抑える1日の上限(100件)を数えるだけで、誰が使ったかは記録しない。AI を呼ぶ前に枠を確保するので、成分ではないと判定された分や失敗した分も数えられる
