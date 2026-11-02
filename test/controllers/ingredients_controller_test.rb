@@ -140,6 +140,34 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[aria-label*=注意度]", 0
   end
 
+  test "成分辞典に入力補完つきの成分名の欄を表示する" do
+    get ingredients_path
+    assert_select "form[action=?][method=get] [data-controller=autocomplete] input[name=q][role=combobox]", ingredients_path
+    assert_select "input[name=q][required]", 0
+  end
+
+  test "成分辞典を成分名で絞り込み、ほかの条件と組み合わせる" do
+    get ingredients_path, params: { q: "ぱらべん" }
+    assert_select "p", "2件"
+    assert_select "input[name=q][value=?]", "ぱらべん"
+    assert_select "a", text: "条件をクリア"
+    assert_select "a[href=?]", ingredients_path(caution_level: [ 3 ], q: "ぱらべん")
+
+    get ingredients_path, params: { q: "ぱらべん", caution_level: [ 1 ] }
+    assert_select "p", "0件"
+
+    get ingredients_path, params: { q: "めちる", category: "防腐" }
+    assert_select "p", "1件"
+  end
+
+  test "成分辞典の成分名の条件が空やヌル文字でも、エラーにしない" do
+    get ingredients_path, params: { q: " " }
+    assert_select "p", "3件"
+
+    get ingredients_path, params: { q: "メチル\u0000" }
+    assert_response :success
+  end
+
   test "入力補完は空の入力やヌル文字でもエラーにしない" do
     get suggestions_ingredients_path, params: { q: "" }
     assert_response :success

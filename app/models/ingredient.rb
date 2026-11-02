@@ -49,21 +49,24 @@ class Ingredient < ApplicationRecord
       .order("score DESC", :reading)
   end
 
-  # 入力補完の候補。名前・読み・INCI名に入力が含まれる成分を、前方一致を先にして返す
-  # 含まれる成分がなければ、あいまい検索で誤字の候補を探す
-  def self.autocomplete(query, limit: AUTOCOMPLETE_LIMIT)
+  # 名前・読み・INCI名に入力が含まれる成分(成分辞典の絞り込みと入力補完で使う)
+  def self.matching(query)
     name_query = sanitize_sql_like(normalize_name(query))
     return none if name_query.empty?
 
     inci_query = sanitize_sql_like(normalize_inci_name(query))
+    where("name LIKE :name OR reading LIKE :name OR inci_name ILIKE :inci", name: "%#{name_query}%", inci: "%#{inci_query}%")
+  end
+
+  # 入力補完の候補。入力が含まれる成分を、前方一致を先にして返す
+  # 含まれる成分がなければ、あいまい検索で誤字の候補を探す
+  def self.autocomplete(query, limit: AUTOCOMPLETE_LIMIT)
     prefix_first = sanitize_sql_array([
       "CASE WHEN name LIKE :name_prefix OR reading LIKE :name_prefix OR inci_name ILIKE :inci_prefix THEN 0 ELSE 1 END",
-      { name_prefix: "#{name_query}%", inci_prefix: "#{inci_query}%" }
+      { name_prefix: "#{sanitize_sql_like(normalize_name(query))}%", inci_prefix: "#{sanitize_sql_like(normalize_inci_name(query))}%" }
     ])
 
-    matches = where("name LIKE :name OR reading LIKE :name OR inci_name ILIKE :inci", name: "%#{name_query}%", inci: "%#{inci_query}%")
-      .order(Arel.sql(prefix_first), :reading, :id)
-      .limit(limit)
+    matches = matching(query).order(Arel.sql(prefix_first), :reading, :id).limit(limit)
     matches.exists? ? matches : fuzzy_search(query).limit(limit)
   end
 end

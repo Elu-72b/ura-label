@@ -4,7 +4,7 @@
 <p class="mt-2 text-sm text-gray-700">登録されている成分を五十音順に並べています。成分名を選ぶと詳細を表示します。</p>
 
 <div class="mt-4">
-  <%= render "ingredients/caution_filter", selected_levels: @caution_levels, category: @category %>
+  <%= render "ingredients/caution_filter", selected_levels: @caution_levels, category: @category, query: @query %>
 </div>
 
 <%= form_with url: ingredients_path, method: :get, class: "mt-4 flex flex-wrap items-end gap-3" do |f| %>
@@ -18,8 +18,9 @@
           { include_blank: "すべて", selected: @category },
           class: "mt-1 rounded border border-gray-400 px-2 py-2" %>
   </div>
+  <%= render "shared/ingredient_search_field", form: f, value: @query %>
   <%= f.submit "絞り込む", name: nil, class: "rounded bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800" %>
-  <% if @caution_levels.any? || @category %>
+  <% if @caution_levels.any? || @category || @query.present? %>
     <%= link_to "条件をクリア", ingredients_path, class: "py-2 text-sm underline" %>
   <% end %>
 <% end %>

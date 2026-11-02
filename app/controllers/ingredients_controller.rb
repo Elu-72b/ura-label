@@ -4,10 +4,12 @@ class IngredientsController < ApplicationController
     # 範囲外の注意度・一覧にない分類は、絞り込みなしとして扱う
     @caution_levels = selected_caution_levels
     @category = params[:category].to_s.presence_in(Ingredient::CATEGORIES)
+    @query = search_query
 
     @ingredients = Ingredient.order(:reading, :id)
     @ingredients = @ingredients.where(caution_level: @caution_levels) if @caution_levels.any?
     @ingredients = @ingredients.where(category: @category) if @category
+    @ingredients = @ingredients.matching(@query) if @query.present?
   end
 
   def show
@@ -16,8 +18,7 @@ class IngredientsController < ApplicationController
 
   # 入力補完の候補(成分入力ページから入力中に呼ばれる)
   def suggestions
-    query = params[:q].to_s.delete("\0").strip.first(SearchesController::MAX_QUERY_LENGTH)
-    @suggestions = Ingredient.autocomplete(query)
+    @suggestions = Ingredient.autocomplete(search_query)
     render layout: false
   end
 
@@ -27,5 +28,10 @@ class IngredientsController < ApplicationController
   def selected_caution_levels
     requested = Array.wrap(params[:caution_level]).map { |level| level.to_s.to_i }
     Ingredient::CAUTION_LEVELS.to_a & requested
+  end
+
+  # 成分名の入力(ヌル文字を除き、長さを制限する)
+  def search_query
+    params[:q].to_s.delete("\0").strip.first(SearchesController::MAX_QUERY_LENGTH)
   end
 end
