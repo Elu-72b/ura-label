@@ -7,7 +7,7 @@
 
 <%= form_with url: root_path, method: :get, class: "mt-4 flex flex-wrap items-end gap-2" do |f| %>
   <%= render "shared/ingredient_search_field", form: f, value: @query, required: true %>
-  <%= f.submit "調べる", name: nil, class: "rounded bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800" %>
+  <%= f.submit "調べる", name: nil, class: "h-10 rounded bg-blue-700 px-4 font-semibold text-white hover:bg-blue-800" %>
 <% end %>
 
 <% if @result %>

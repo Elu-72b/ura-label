@@ -12,14 +12,14 @@
   <% @caution_levels.each do |level| %>
     <%= hidden_field_tag "caution_level[]", level, id: nil %>
   <% end %>
-  <div>
-    <%= f.label :category, "配合目的の分類", class: "block text-sm font-semibold" %>
+  <div class="form-field">
+    <%= f.label :category, "配合目的の分類", class: "form-label" %>
     <%= f.select :category, Ingredient::CATEGORIES,
           { include_blank: "すべて", selected: @category },
-          class: "mt-1 rounded border border-gray-400 px-2 py-2" %>
+          class: "form-control" %>
   </div>
   <%= render "shared/ingredient_search_field", form: f, value: @query %>
-  <%= f.submit "絞り込む", name: nil, class: "rounded bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800" %>
+  <%= f.submit "絞り込む", name: nil, class: "h-10 rounded bg-blue-700 px-4 font-semibold text-white hover:bg-blue-800" %>
   <% if @caution_levels.any? || @category || @query.present? %>
     <%= link_to "条件をクリア", ingredients_path, class: "py-2 text-sm underline" %>
   <% end %>
