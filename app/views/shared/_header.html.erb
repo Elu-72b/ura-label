@@ -17,6 +17,14 @@
            class="absolute right-0 z-30 mt-2 w-56 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
         <ul>
           <li>
+            <%= link_to "成分検索", root_path, data: { action: "menu#close" },
+                  class: "block px-4 py-3 hover:bg-gray-100 focus-visible:bg-gray-100" %>
+          </li>
+          <li>
+            <%= link_to "成分辞典", ingredients_path, data: { action: "menu#close" },
+                  class: "block px-4 py-3 hover:bg-gray-100 focus-visible:bg-gray-100" %>
+          </li>
+          <li>
             <%= link_to "注意度について", caution_path, data: { action: "menu#close" },
                   class: "block px-4 py-3 hover:bg-gray-100 focus-visible:bg-gray-100" %>
           </li>

@@ -18,10 +18,12 @@ class LayoutTest < ActionDispatch::IntegrationTest
     assert_select "header button[aria-label=?][aria-expanded=false][aria-controls=site-menu]", "メニュー"
   end
 
-  test "メニューは最初は閉じていて、注意度についてのリンクがある" do
+  test "メニューは最初は閉じていて、今あるページへのリンクがある" do
     get caution_path
     assert_select "nav#site-menu[hidden]" do
       assert_select "a[href=?]", caution_path
+      assert_select "a[href=?]", root_path, text: "成分検索"
+      assert_select "a[href=?]", ingredients_path, text: "成分辞典"
     end
   end
 
