@@ -188,4 +188,11 @@ class IngredientTest < ActiveSupport::TestCase
     assert_empty Ingredient.autocomplete("_").to_a
     assert_empty Ingredient.autocomplete(" ").to_a
   end
+  test "matching はひらがなや語の途中から成分を探し、あいまい検索はしない" do
+    assert_equal [ ingredients(:water) ], Ingredient.matching("みず").to_a
+    assert_equal 2, Ingredient.matching("ぱらべん").count
+    assert_empty Ingredient.matching("メチルパラベソ").to_a
+    assert_empty Ingredient.matching(" ").to_a
+    assert_empty Ingredient.matching("%").to_a
+  end
 end

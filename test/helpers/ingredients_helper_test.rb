@@ -23,4 +23,9 @@ class IngredientsHelperTest < ActionView::TestCase
     assert_equal ingredients_path(category: "防腐"), caution_filter_path(1, [ 1 ], "防腐")
     assert_equal ingredients_path, caution_filter_path(1, [ 1 ], nil)
   end
+
+  test "注意度タグのリンク先は、成分名の条件を保ち、空なら URL に残さない" do
+    assert_equal ingredients_path(caution_level: [ 1 ], q: "水"), caution_filter_path(1, [], nil, "水")
+    assert_equal ingredients_path(caution_level: [ 1 ]), caution_filter_path(1, [], nil, "")
+  end
 end

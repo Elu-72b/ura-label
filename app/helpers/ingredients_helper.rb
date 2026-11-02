@@ -7,8 +7,8 @@ module IngredientsHelper
   end
 
   # 注意度タグのリンク先。押した注意度を、選択中なら外し、そうでなければ足す。分類の条件は保つ
-  def caution_filter_path(level, selected_levels, category)
+  def caution_filter_path(level, selected_levels, category, query = nil)
     levels = selected_levels.include?(level) ? selected_levels - [ level ] : (selected_levels + [ level ]).sort
-    ingredients_path(caution_level: levels.presence, category: category)
+    ingredients_path(caution_level: levels.presence, category: category, q: query.presence)
   end
 end
