@@ -4,7 +4,8 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
   test "トップに成分名の入力欄を表示し、入力がなければ結果を出さない" do
     get root_path
     assert_response :success
-    assert_select "title", "成分入力 | うらラベル"
+    assert_select "title", "成分検索 | うらラベル"
+    assert_select "h1", "成分検索"
     assert_select "form[action=?][method=get] input[type=search][name=q]", root_path
     assert_select "#result-heading", 0
   end

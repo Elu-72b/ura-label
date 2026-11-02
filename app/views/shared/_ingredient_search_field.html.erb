@@ -1,4 +1,4 @@
-<%# 成分名の入力欄(入力補完つき)。成分入力ページと成分辞典で使う %>
+<%# 成分名の入力欄(入力補完つき)。成分検索ページと成分辞典で使う %>
 <%# locals: (form:, value:, required: false) %>
 <div class="relative min-w-48 flex-1" data-controller="autocomplete" data-autocomplete-url-value="<%= suggestions_ingredients_path %>">
   <%= form.label :q, "成分名", class: "block text-sm font-semibold" %>
