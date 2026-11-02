@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+/* フォームの共通の形。新しい入力欄にも必ず使う */
+@layer components {
+  /* 入力欄の上のラベル */
+  .form-label {
+    @apply block text-sm font-semibold;
+  }
+
+  /* ラベルと入力欄を囲む枠。横に並べたときに同じ幅に分け合う */
+  .form-field {
+    @apply min-w-48 flex-1;
+  }
+
+  /* 1行の入力欄(テキスト・検索・セレクト) */
+  .form-control {
+    @apply mt-1 block h-10 w-full rounded border border-gray-400 bg-white px-3 text-base;
+  }
+}

@@ -1,11 +1,11 @@
 <%# 成分名の入力欄(入力補完つき)。成分検索ページと成分辞典で使う %>
 <%# locals: (form:, value:, required: false) %>
-<div class="relative min-w-48 flex-1" data-controller="autocomplete" data-autocomplete-url-value="<%= suggestions_ingredients_path %>">
-  <%= form.label :q, "成分名", class: "block text-sm font-semibold" %>
+<div class="form-field relative" data-controller="autocomplete" data-autocomplete-url-value="<%= suggestions_ingredients_path %>">
+  <%= form.label :q, "成分名", class: "form-label" %>
   <%= form.search_field :q, value: value, required: required, maxlength: SearchesController::MAX_QUERY_LENGTH,
         autocomplete: "off", role: "combobox", aria: { autocomplete: "list", expanded: false, controls: "ingredient-suggestions" },
         data: { autocomplete_target: "input", action: "input->autocomplete#search keydown->autocomplete#navigate blur->autocomplete#close" },
-        placeholder: "例: メチルパラベン", class: "mt-1 w-full rounded border border-gray-400 px-3 py-2" %>
+        placeholder: "例: メチルパラベン", class: "form-control" %>
   <ul id="ingredient-suggestions" role="listbox" aria-label="成分名の候補" hidden
       data-autocomplete-target="list" data-action="mousedown->autocomplete#keepFocus click->autocomplete#select"
       class="absolute inset-x-0 z-20 mt-1 max-h-72 overflow-y-auto rounded border border-gray-300 bg-white shadow-lg"></ul>

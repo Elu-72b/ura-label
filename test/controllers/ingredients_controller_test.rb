@@ -146,6 +146,12 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name=q][required]", 0
   end
 
+  test "成分辞典の検索欄と選択欄に、同じ形のクラスを使う" do
+    get ingredients_path
+    assert_select "input[name=q].form-control"
+    assert_select "select[name=category].form-control"
+  end
+
   test "成分辞典を成分名で絞り込み、ほかの条件と組み合わせる" do
     get ingredients_path, params: { q: "ぱらべん" }
     assert_select "p", "2件"
