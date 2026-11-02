@@ -16,7 +16,7 @@ class IngredientsController < ApplicationController
     @ingredient = Ingredient.find(params[:id])
   end
 
-  # 入力補完の候補(成分入力ページから入力中に呼ばれる)
+  # 入力補完の候補(成分辞典ページから入力中に呼ばれる)
   def suggestions
     @suggestions = Ingredient.autocomplete(search_query)
     render layout: false

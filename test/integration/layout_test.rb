@@ -38,13 +38,13 @@ class LayoutTest < ActionDispatch::IntegrationTest
     assert_select "footer nav a[aria-current]", 0
   end
 
-  test "ヘッダーのアプリ名から成分入力ページ(トップ)へ移動できる" do
+  test "ヘッダーのアプリ名から成分検索ページ(トップ)へ移動できる" do
     get caution_path
     assert_select "header a[href=?]", root_path, text: "うらラベル"
   end
 
-  test "フッターメニューに成分入力があり、トップでは今いるページとして示す" do
+  test "フッターメニューに成分検索があり、トップでは今いるページとして示す" do
     get root_path, params: { q: "水" }
-    assert_select "footer nav a[href=?][aria-current=page]", root_path, text: "成分入力"
+    assert_select "footer nav a[href=?][aria-current=page]", root_path, text: "成分検索"
   end
 end
