@@ -132,6 +132,23 @@ class IngredientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "入力補完は候補だけを返し、注意度やレイアウトを含めない" do
+    get suggestions_ingredients_path, params: { q: "ぱらべん" }
+    assert_response :success
+    assert_select "li[role=option][data-name=?]", "メチルパラベン"
+    assert_select "footer", 0
+    assert_select "[aria-label*=注意度]", 0
+  end
+
+  test "入力補完は空の入力やヌル文字でもエラーにしない" do
+    get suggestions_ingredients_path, params: { q: "" }
+    assert_response :success
+    assert_select "li", 0
+
+    get suggestions_ingredients_path, params: { q: "メチル\u0000" }
+    assert_response :success
+  end
+
   test "成分詳細で断定的な言葉を使っていない" do
     get ingredient_path(ingredients(:methylparaben))
     assert_no_forbidden_words

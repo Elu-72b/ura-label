@@ -14,6 +14,13 @@ class IngredientsController < ApplicationController
     @ingredient = Ingredient.find(params[:id])
   end
 
+  # 入力補完の候補(成分入力ページから入力中に呼ばれる)
+  def suggestions
+    query = params[:q].to_s.delete("\0").strip.first(SearchesController::MAX_QUERY_LENGTH)
+    @suggestions = Ingredient.autocomplete(query)
+    render layout: false
+  end
+
   private
 
   # URL の注意度(?caution_level[]=1&caution_level[]=3)から、正しい値だけを小さい順に取り出す

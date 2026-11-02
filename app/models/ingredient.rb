@@ -8,6 +8,9 @@ class Ingredient < ApplicationRecord
   # 読みに使える文字(カタカナ・長音・中点・半角数字)。五十音順に並べるため、ひらがな・漢字・英字は入れない
   READING_FORMAT = /\A[ァ-ヶー・0-9]+\z/
 
+  # 入力補完に出す候補の上限
+  AUTOCOMPLETE_LIMIT = 8
+
   # 値を代入したときに加え、find_by(name: ...) / where(name: ...) の検索値にも自動で適用される
   normalizes :name, :reading, with: ->(value) { normalize_name(value) }
   normalizes :inci_name, with: ->(value) { normalize_inci_name(value).presence }
@@ -44,5 +47,23 @@ class Ingredient < ApplicationRecord
     select("ingredients.*", score)
       .where("name % :name_query OR reading % :name_query OR inci_name % :inci_query", binds)
       .order("score DESC", :reading)
+  end
+
+  # 入力補完の候補。名前・読み・INCI名に入力が含まれる成分を、前方一致を先にして返す
+  # 含まれる成分がなければ、あいまい検索で誤字の候補を探す
+  def self.autocomplete(query, limit: AUTOCOMPLETE_LIMIT)
+    name_query = sanitize_sql_like(normalize_name(query))
+    return none if name_query.empty?
+
+    inci_query = sanitize_sql_like(normalize_inci_name(query))
+    prefix_first = sanitize_sql_array([
+      "CASE WHEN name LIKE :name_prefix OR reading LIKE :name_prefix OR inci_name ILIKE :inci_prefix THEN 0 ELSE 1 END",
+      { name_prefix: "#{name_query}%", inci_prefix: "#{inci_query}%" }
+    ])
+
+    matches = where("name LIKE :name OR reading LIKE :name OR inci_name ILIKE :inci", name: "%#{name_query}%", inci: "%#{inci_query}%")
+      .order(Arel.sql(prefix_first), :reading, :id)
+      .limit(limit)
+    matches.exists? ? matches : fuzzy_search(query).limit(limit)
   end
 end

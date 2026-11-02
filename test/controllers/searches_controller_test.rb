@@ -9,6 +9,14 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#result-heading", 0
   end
 
+  test "成分名の入力欄を、入力補完の combobox にする" do
+    get root_path
+    assert_select "[data-controller=autocomplete][data-autocomplete-url-value=?]", suggestions_ingredients_path do
+      assert_select "input[role=combobox][autocomplete=off][aria-expanded=false][aria-controls=ingredient-suggestions]"
+      assert_select "ul#ingredient-suggestions[role=listbox][hidden]"
+    end
+  end
+
   test "完全に一致した成分は、注意度バッジと配合目的を表示する" do
     get root_path, params: { q: "めちるぱらべん" }
     assert_select "a[href=?][data-turbo-frame=modal]", ingredient_path(ingredients(:methylparaben)), text: /3\s*メチルパラベン/

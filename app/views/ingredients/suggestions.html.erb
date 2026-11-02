@@ -1,0 +1,8 @@
+<%# 入力補完の候補。autocomplete_controller.js がリストの中に入れる %>
+<% @suggestions.each_with_index do |ingredient, index| %>
+  <li id="ingredient-suggestion-<%= index %>" role="option" aria-selected="false" data-name="<%= ingredient.name %>"
+      class="cursor-pointer px-3 py-2 hover:bg-gray-100 aria-selected:bg-gray-200">
+    <span class="font-medium"><%= ingredient.name %></span>
+    <span class="ml-2 text-sm text-gray-700"><%= ingredient.reading %></span>
+  </li>
+<% end %>
