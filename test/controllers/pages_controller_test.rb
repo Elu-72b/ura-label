@@ -23,4 +23,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get caution_path
     assert_no_forbidden_words
   end
+
+  test "利用規約のページを表示する" do
+    get terms_path
+    assert_response :success
+    assert_select "title", "利用規約 | うらラベル"
+    assert_select "h1", "利用規約"
+    assert_no_forbidden_words
+  end
 end
