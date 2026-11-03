@@ -31,4 +31,14 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "利用規約"
     assert_no_forbidden_words
   end
+
+  test "プライバシーポリシーのページを表示する" do
+    get privacy_path
+    assert_response :success
+    assert_select "title", "プライバシーポリシー | うらラベル"
+    assert_select "h1", "プライバシーポリシー"
+    assert_select "a[target=_blank][rel~=noopener]", text: /お問い合わせフォーム/
+    assert_no_forbidden_words
+  end
 end
+

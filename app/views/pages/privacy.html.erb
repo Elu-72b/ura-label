@@ -1,0 +1,48 @@
+<% content_for :title, "プライバシーポリシー" %>
+
+<article class="space-y-6">
+  <header>
+    <h1 class="text-2xl font-bold">プライバシーポリシー</h1>
+    <p class="mt-2 text-sm text-gray-700">制定日: <制定日></p>
+  </header>
+
+  <section aria-labelledby="privacy-collect-heading">
+    <h2 id="privacy-collect-heading" class="text-lg font-bold">取得する情報</h2>
+    <ul class="mt-2 list-disc space-y-1 pl-5 leading-relaxed">
+      <li>アクセスログ(IPアドレス、ブラウザの種類、アクセス日時、アクセスしたURLなど)</li>
+      <li>フォームの送信を保護するための Cookie(セッション Cookie)</li>
+    </ul>
+    <p class="mt-2 leading-relaxed">
+      入力した成分名を、利用者ごとに記録することはありません。本アプリのログでは検索語を隠していますが、
+      検索語はURLに含まれるため、サービスの提供に利用する事業者のアクセスログに残る場合があります。
+      入力中の文字も、候補を表示するためにサーバーへ送信します。
+      会員登録の機能はなく、氏名やメールアドレスは取得しません。
+    </p>
+  </section>
+
+  <section aria-labelledby="privacy-purpose-heading">
+    <h2 id="privacy-purpose-heading" class="text-lg font-bold">利用目的</h2>
+    <p class="mt-2 leading-relaxed">本サービスの提供、不具合の調査、不正な利用への対応のために利用します。</p>
+  </section>
+
+  <section aria-labelledby="privacy-external-heading">
+    <h2 id="privacy-external-heading" class="text-lg font-bold">外部への送信</h2>
+    <p class="mt-2 leading-relaxed">
+      本サービスは、アプリの実行に Render、データベースに Neon を利用しています。
+      法令に基づく場合を除き、取得した情報を第三者に提供しません。
+    </p>
+  </section>
+
+  <section aria-labelledby="privacy-contact-heading">
+    <h2 id="privacy-contact-heading" class="text-lg font-bold">お問い合わせ</h2>
+    <p class="mt-2 leading-relaxed">
+      <%= link_to "お問い合わせフォーム(別のタブ)", "<GoogleフォームのURL>", target: "_blank", rel: "noopener noreferrer", class: "underline" %>
+      からご連絡ください。フォームは Google フォームを利用しており、入力内容は Google のサービスに保存されます。
+    </p>
+  </section>
+
+  <section aria-labelledby="privacy-change-heading">
+    <h2 id="privacy-change-heading" class="text-lg font-bold">改定</h2>
+    <p class="mt-2 leading-relaxed">本ポリシーを変更したときは、このページに掲載します。</p>
+  </section>
+</article>
