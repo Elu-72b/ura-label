@@ -25,6 +25,7 @@ class LayoutTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?]", root_path, text: "成分検索"
       assert_select "a[href=?]", ingredients_path, text: "成分辞典"
       assert_select "a[href=?]", terms_path
+      assert_select "a[href=?]", privacy_path
     end
   end
 
