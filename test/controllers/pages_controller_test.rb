@@ -41,4 +41,3 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_forbidden_words
   end
 end
-
