@@ -18,6 +18,9 @@ Rails.application.routes.draw do
   # 利用規約
   get "terms", to: "pages#terms"
 
+  # プライバシーポリシー
+  get "privacy", to: "pages#privacy"
+
   # 成分辞典(一覧)・成分詳細
   resources :ingredients, only: [ :index, :show ] do
     collection { get :suggestions }
