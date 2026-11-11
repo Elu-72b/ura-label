@@ -3,4 +3,6 @@ class PagesController < ApplicationController
   def caution; end
 
   def terms; end
+
+  def privacy; end
 end
